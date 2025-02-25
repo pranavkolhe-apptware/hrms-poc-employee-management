@@ -15,10 +15,7 @@ export default function Dashboard({ children }) {
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="h-6" />
-            {/* <div className="relative">
-              <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
-              <Input type="search" placeholder="Search..." className="w-[200px] pl-8 md:w-[300px]" />
-            </div> */}
+            
           </div>
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />

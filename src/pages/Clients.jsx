@@ -1,8 +1,11 @@
 import React from 'react'
+import ClientTable from '../components/ui/client-table'
 
 const Clients = () => {
   return (
-    <div>Clients</div>
+    <div>
+      <ClientTable/>
+    </div>
   )
 }
 

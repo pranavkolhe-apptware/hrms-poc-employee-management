@@ -18,7 +18,7 @@ export default function Dashboard({ children }) {
             
           </div>
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarImage src="https://img.icons8.com/?size=100&id=23242&format=png&color=000000" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </header>

@@ -7,9 +7,9 @@ import { ProjectTable } from "../components/ProjectTable"
 import { ClientTable } from "../components/ClientTable"
 import { AllotmentTable } from "../components/AllotmentTable"
 
-export default function Home() {
+const Home = () => {
   return (
-    <div className="hidden flex-col md:flex">
+    <div className="flex-col md:flex">
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -97,6 +97,7 @@ export default function Home() {
     </div>
   )
 }
+  export default Home
 
 
 

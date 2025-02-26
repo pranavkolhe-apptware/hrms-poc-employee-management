@@ -10,6 +10,9 @@ import {
   Send,
   Settings2,
   SquareTerminal,
+  House ,
+  Users ,
+  Briefcase ,
 } from "lucide-react"
 
 import { NavMain } from "../components/nav-main"
@@ -33,26 +36,23 @@ const data = {
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
-    // {
-    //   title: "Playground",
-    //   url: "#",
-    //   icon: SquareTerminal,
-    //   isActive: true,
-    //   items: [
-    //     {
-    //       title: "History",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Starred",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Settings",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
+    {
+      title: "Work",
+      url: "#",
+      icon: Briefcase ,
+      isActive: true,
+      items: [
+        {
+          title: "Projects",
+          url: "/dashboard/projects",
+        },
+        {
+          title: "Clients",
+          url: "/dashboard/clients",
+        },
+        
+      ],
+    },
     // {
     //   title: "Models",
     //   url: "#",
@@ -134,18 +134,13 @@ const data = {
   projects: [
     {
       name: "Home",
-      url: "/",
-      icon: Frame,
+      url: "/dashboard",
+      icon: House ,
     },
     {
-      name: "Settings",
-      url: "/settings",
-      icon: PieChart,
-    },
-    {
-      name: "Employee Management",
-      url: "emp",
-      icon: Map,
+      name: "People",
+      url: "/dashboard/people",
+      icon: Users ,
     },
   ],
 }
@@ -158,14 +153,14 @@ export function AppSidebar({
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
+            <SidebarMenuButton size="lg "  asChild>
               <a href="#">
                 <div
                   className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
+                  <Command className="size-8" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Acme Inc</span>
+                  <span className="truncate font-semibold">Appttrack</span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
               </a>
@@ -174,8 +169,8 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
+        <NavMain items={data.navMain}  />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

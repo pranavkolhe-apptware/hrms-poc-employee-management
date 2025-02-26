@@ -1,74 +1,163 @@
-import { Folder, MoreHorizontal, Share, Trash2 } from "lucide-react";
+// import { Folder, MoreHorizontal, Share, Trash2 } from "lucide-react";
 
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "../components/ui/dropdown-menu"
+// import {
+//   SidebarGroup,
+//   SidebarGroupLabel,
+//   SidebarMenu,
+//   SidebarMenuAction,
+//   SidebarMenuButton,
+//   SidebarMenuItem,
+//   useSidebar,
+// } from "../components/ui/sidebar"
+
+// export function NavProjects({
+//   projects
+// }) {
+//   const { isMobile } = useSidebar()
+
+//   return (
+//     (<SidebarGroup className="group-data-[collapsible=icon]:hidden">
+//       {/* <SidebarGroupLabel>Projects</SidebarGroupLabel> */}
+//       <SidebarMenu>
+//         {projects.map((item) => (
+//           <SidebarMenuItem key={item.name}>
+//             <SidebarMenuButton asChild>
+//               <a href={item.url}>
+//                 <item.icon />
+//                 <span>{item.name}</span>
+//               </a>
+//             </SidebarMenuButton>
+//             <DropdownMenu>
+//               <DropdownMenuTrigger asChild>
+//                 <SidebarMenuAction showOnHover>
+//                   <MoreHorizontal />
+//                   <span className="sr-only">More</span>
+//                 </SidebarMenuAction>
+//               </DropdownMenuTrigger>
+//               <DropdownMenuContent
+//                 className="w-48"
+//                 side={isMobile ? "bottom" : "right"}
+//                 align={isMobile ? "end" : "start"}>
+//                 <DropdownMenuItem>
+//                   <Folder className="text-muted-foreground" />
+//                   <span>View Project</span>
+//                 </DropdownMenuItem>
+//                 <DropdownMenuItem>
+//                   <Share className="text-muted-foreground" />
+//                   <span>Share Project</span>
+//                 </DropdownMenuItem>
+//                 <DropdownMenuSeparator />
+//                 <DropdownMenuItem>
+//                   <Trash2 className="text-muted-foreground" />
+//                   <span>Delete Project</span>
+//                 </DropdownMenuItem>
+//               </DropdownMenuContent>
+//             </DropdownMenu>
+//           </SidebarMenuItem>
+//         ))}
+//         <SidebarMenuItem>
+//           <SidebarMenuButton>
+//             <MoreHorizontal />
+//             <span>More</span>
+//           </SidebarMenuButton>
+//         </SidebarMenuItem>
+//       </SidebarMenu>
+//     </SidebarGroup>)
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { Link } from "react-router-dom"
+import { Folder, MoreHorizontal, Share, Trash2 } from "lucide-react"
+import { useSidebar } from "../components/ui/sidebar"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
 import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+    SidebarGroup,
+    SidebarMenu,
+    SidebarMenuAction,
+    SidebarMenuButton,
+    SidebarMenuItem,
 } from "../components/ui/sidebar"
 
-export function NavProjects({
-  projects
-}) {
-  const { isMobile } = useSidebar()
+export function NavProjects({ projects }) {
+    const { isMobile, setOpenMobile } = useSidebar()
 
-  return (
-    (<SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      {/* <SidebarGroupLabel>Projects</SidebarGroupLabel> */}
-      <SidebarMenu>
-        {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </a>
-            </SidebarMenuButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
-                  <MoreHorizontal />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}>
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Share className="text-muted-foreground" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        ))}
-        <SidebarMenuItem>
-          <SidebarMenuButton>
-            <MoreHorizontal />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarGroup>)
-  );
+    return (
+        <SidebarGroup className="group-data-[collapsible=icon]:hidden  mb-0">
+            <SidebarMenu>
+                {projects.map((item) => (
+                    <SidebarMenuItem key={item.name}>
+                        <SidebarMenuButton asChild>
+                            <Link
+                                to={item.url}
+                                onClick={() => {
+                                    if (isMobile) setOpenMobile(false)
+                                }}
+                            >
+                                <item.icon  />
+                                <span className="text-sm">{item.name}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                        {/* <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <SidebarMenuAction showOnHover>
+                                    <MoreHorizontal />
+                                    <span className="sr-only">More</span>
+                                </SidebarMenuAction>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                className="w-48"
+                                side={isMobile ? "bottom" : "right"}
+                                align={isMobile ? "end" : "start"}
+                            >
+                                <DropdownMenuItem>
+                                    <Folder className="text-muted-foreground" />
+                                    <span>View Project</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Share className="text-muted-foreground" />
+                                    <span>Share Project</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                    <Trash2 className="text-muted-foreground" />
+                                    <span>Delete Project</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu> */}
+                    </SidebarMenuItem>
+                ))}
+                {/* <SidebarMenuItem>
+                    <SidebarMenuButton>
+                        <MoreHorizontal />
+                        {/* <span>More</span> */}
+                    {/* </SidebarMenuButton> */}
+                {/* </SidebarMenuItem> */} 
+            </SidebarMenu>
+        </SidebarGroup>
+    )
 }

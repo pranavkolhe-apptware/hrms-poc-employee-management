@@ -23,7 +23,7 @@ export function NavMain({
   items
 }) {
   return (
-    (<SidebarGroup>
+    (<SidebarGroup className=" mt-[-20px]">
       {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
       <SidebarMenu>
         {items.map((item) => (
@@ -31,8 +31,8 @@ export function NavMain({
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
                 <a href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
+                  <item.icon className="w-16 h-16"/>
+                  <span className="text-sm">{item.title}</span>
                 </a>
               </SidebarMenuButton>
               {item.items?.length ? (

@@ -4,7 +4,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Home from './pages/Home'
-import Settings from './pages/Settings'
+import Clients from './pages/Clients'
+import People from './pages/People'
+import Projects from './pages/Projects'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -20,12 +22,26 @@ function App() {
             </Dashboard>
           } 
         />
-        <Route path="/dashboard/settings" element={
+        <Route path="/dashboard/people" element={
             <Dashboard>
-              <Settings/>
+              <People/>
             </Dashboard>
           } 
         />
+        <Route path="/dashboard/projects" element={
+            <Dashboard>
+              <Projects/>
+            </Dashboard>
+          } 
+        />
+        <Route path="/dashboard/clients" element={
+            <Dashboard>
+              <Clients/>
+            </Dashboard>
+          } 
+        />
+
+
       </Routes>
     </BrowserRouter>
 

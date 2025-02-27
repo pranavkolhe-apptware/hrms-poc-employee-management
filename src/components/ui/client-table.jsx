@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import React, { useState } from "react";
@@ -19,45 +21,52 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./alert-dialog";
+import { useNavigate } from "react-router-dom";
 
 export default function ClientTable() {
-  // State for search and filter
+  // Search/filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [companyFilter, setCompanyFilter] = useState("all");
+  const navigate = useNavigate();
 
-  // Dummy client data
+  // Dummy client data (projects as an array of strings)
   const [clients, setClients] = useState([
     {
       id: "CLT001",
       name: "John Doe",
-      projectName: "E-commerce Platform",
+      projects: ["E-commerce Platform", "Analytics Dashboard"],
       companyName: "Acme Corp",
       dateAdded: new Date("2024-02-20"),
     },
     {
       id: "CLT002",
       name: "Jane Smith",
-      projectName: "Mobile App Development",
+      projects: ["Mobile App Development"],
       companyName: "Global Tech",
       dateAdded: new Date("2024-01-15"),
     },
     {
       id: "CLT003",
       name: "Alice Brown",
-      projectName: "CRM System",
+      projects: ["CRM System", "Content Management System"],
       companyName: "Innovate Ltd",
       dateAdded: new Date("2024-02-25"),
     },
   ]);
 
-  // State for editing, adding and deletion dialogs
+  // Dialog states for editing, adding and deletion
   const [editingClient, setEditingClient] = useState(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [deleteClientId, setDeleteClientId] = useState(null);
-  const [newClient, setNewClient] = useState({ name: "", projectName: "", companyName: "" });
+  // newClient.projects will be entered as a comma-separated string
+  const [newClient, setNewClient] = useState({ name: "", projects: "", companyName: "" });
 
-  // Filter clients based on search text and company filter
+  // NEW STATE: for Projects Modal
+  const [projectsModalOpen, setProjectsModalOpen] = useState(false);
+  const [modalClient, setModalClient] = useState(null);
+
+  // Filter clients by search text and company filter
   const filteredClients = clients.filter((client) => {
     return (
       (client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -66,7 +75,7 @@ export default function ClientTable() {
     );
   });
 
-  // Handlers for editing, adding and deletion actions
+  // Edit handlers
   const handleEdit = (client) => {
     setEditingClient(client);
     setIsEditDialogOpen(true);
@@ -75,30 +84,40 @@ export default function ClientTable() {
   const handleEditSubmit = (e) => {
     e.preventDefault();
     if (!editingClient) return;
-
     const formData = new FormData(e.currentTarget);
+    const projectsArr = formData
+      .get("projects")
+      .toString()
+      .split(",")
+      .map((p) => p.trim())
+      .filter((p) => p !== "");
     const updatedClient = {
       ...editingClient,
       name: formData.get("name"),
-      projectName: formData.get("projectName"),
+      projects: projectsArr,
       companyName: formData.get("companyName"),
     };
-
     setClients(clients.map((c) => (c.id === updatedClient.id ? updatedClient : c)));
     toast.success("Client updated successfully");
     setIsEditDialogOpen(false);
     setEditingClient(null);
   };
 
+  // Add handlers
   const handleAddSubmit = (e) => {
     e.preventDefault();
     const id = `CLT00${clients.length + 1}`;
-    setClients([...clients, { id, ...newClient, dateAdded: new Date() }]);
+    const projectsArr = newClient.projects
+      .split(",")
+      .map((p) => p.trim())
+      .filter((p) => p !== "");
+    setClients([...clients, { id, ...newClient, projects: projectsArr, dateAdded: new Date() }]);
     toast.success("New client added successfully!");
     setIsAddDialogOpen(false);
-    setNewClient({ name: "", projectName: "", companyName: "" });
+    setNewClient({ name: "", projects: "", companyName: "" });
   };
 
+  // Delete handlers
   const handleDelete = (clientId) => {
     setDeleteClientId(clientId);
   };
@@ -111,34 +130,41 @@ export default function ClientTable() {
     }
   };
 
+  // Projects Modal handler
+  const openProjectsModal = (client) => {
+    setModalClient(client);
+    setProjectsModalOpen(true);
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto mt-5 p-4 space-y-6">
       {/* Search and Filter Controls */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <Input
           placeholder="Search by client name or ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full md:max-w-xs"
         />
-        <Select value={companyFilter} onValueChange={setCompanyFilter}>
-          <SelectTrigger>
-            <SelectValue placeholder="Filter by company" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            {[
-              ...new Set(clients.map((client) => client.companyName)),
-            ].map((company) => (
-              <SelectItem key={company} value={company}>
-                {company}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Client
-        </Button>
+        <div className="flex items-center gap-4">
+          <Select value={companyFilter} onValueChange={setCompanyFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Filter by company" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              {[...new Set(clients.map((client) => client.companyName))].map((company) => (
+                <SelectItem key={company} value={company}>
+                  {company}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Client
+          </Button>
+        </div>
       </div>
 
       {/* Clients Table */}
@@ -147,8 +173,8 @@ export default function ClientTable() {
           <TableRow>
             <TableHead>Client ID</TableHead>
             <TableHead>Client Name</TableHead>
-            <TableHead>Project Name</TableHead>
             <TableHead>Company Name</TableHead>
+            <TableHead>Projects</TableHead>
             <TableHead>Date Added</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -158,8 +184,12 @@ export default function ClientTable() {
             <TableRow key={client.id}>
               <TableCell>{client.id}</TableCell>
               <TableCell>{client.name}</TableCell>
-              <TableCell>{client.projectName}</TableCell>
               <TableCell>{client.companyName}</TableCell>
+              <TableCell>
+                <Button variant="outline" size="sm" onClick={() => openProjectsModal(client)}>
+                  View
+                </Button>
+              </TableCell>
               <TableCell>{format(client.dateAdded, "MMM dd, yyyy")}</TableCell>
               <TableCell className="flex items-center gap-2">
                 <Button onClick={() => handleEdit(client)}>
@@ -188,26 +218,22 @@ export default function ClientTable() {
                   <Input id="name" name="name" defaultValue={editingClient?.name} required />
                 </div>
                 <div>
-                  <Label htmlFor="projectName">Project Name</Label>
-                  <Input
-                    id="projectName"
-                    name="projectName"
-                    defaultValue={editingClient?.projectName}
-                    required
-                  />
+                  <Label htmlFor="companyName">Company Name</Label>
+                  <Input id="companyName" name="companyName" defaultValue={editingClient?.companyName} required />
                 </div>
                 <div>
-                  <Label htmlFor="companyName">Company Name</Label>
+                  <Label htmlFor="projects">Projects</Label>
                   <Input
-                    id="companyName"
-                    name="companyName"
-                    defaultValue={editingClient?.companyName}
+                    id="projects"
+                    name="projects"
+                    defaultValue={editingClient?.projects.join(", ")}
+                    placeholder="Enter projects separated by commas"
                     required
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">Save Changes</Button>
+                <Button type="submit" className="mt-2">Save Changes</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -234,16 +260,6 @@ export default function ClientTable() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="projectName">Project Name</Label>
-                  <Input
-                    id="projectName"
-                    name="projectName"
-                    value={newClient.projectName}
-                    onChange={(e) => setNewClient({ ...newClient, projectName: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
                   <Label htmlFor="companyName">Company Name</Label>
                   <Input
                     id="companyName"
@@ -253,9 +269,22 @@ export default function ClientTable() {
                     required
                   />
                 </div>
+                <div>
+                  <Label htmlFor="projects">Projects</Label>
+                  <Input
+                    id="projects"
+                    name="projects"
+                    value={newClient.projects}
+                    onChange={(e) => setNewClient({ ...newClient, projects: e.target.value })}
+                    placeholder="Enter projects separated by commas"
+                    required
+                  />
+                </div>
               </div>
               <DialogFooter>
-                <Button type="submit" className="mt-2">Add Client</Button>
+                <Button type="submit" className="mt-2">
+                  Add Client
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -281,6 +310,29 @@ export default function ClientTable() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+      )}
+
+      {/* Projects Modal Dialog */}
+      {projectsModalOpen && modalClient && (
+        <Dialog open={projectsModalOpen} onOpenChange={setProjectsModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{modalClient.name} - Projects</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2">
+              {modalClient.projects.map((proj, index) => (
+                <div key={index} className="p-2 border rounded-md">
+                  {proj}
+                </div>
+              ))}
+            </div>
+            <DialogFooter>
+              <Button variant="link" onClick={() => navigate(`/clients/${modalClient.id}`)}>
+                View More Details
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

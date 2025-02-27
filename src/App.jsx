@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Clients from './pages/Clients'
 import People from './pages/People'
 import Projects from './pages/Projects'
+import ClientDetails from "./pages/ClientDetails";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -40,7 +41,12 @@ function App() {
             </Dashboard>
           } 
         />
-
+<Route path="/clients/:clientId" element=
+{
+  <Dashboard>
+<ClientDetails />
+</Dashboard>
+} />
 
       </Routes>
     </BrowserRouter>

@@ -1,17 +1,3 @@
-// import React from 'react'
-
-// const People = () => {
-//   return (
-//     <div>People</div>
-//   )
-// }
-
-// export default People
-
-
-
-
-
 "use client"
 
 import { useState } from "react"
@@ -34,22 +20,16 @@ const People = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-3xl font-bold">Employee Management</h1>
-      <div className="flex justify-between items-center">
-        <SearchBar onSearch={setSearchTerm} />
-        <Button onClick={() => setShowEmployeeForm(true)}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Add New Employee
-        </Button>
-      </div>
       <Tabs defaultValue="employees" onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="employees">Employees</TabsTrigger>
-          <TabsTrigger value="allotment">Allotment</TabsTrigger>
+          <TabsTrigger value="engagement">Engagement</TabsTrigger>
         </TabsList>
         <TabsContent value="employees">
           <EmployeeList searchTerm={searchTerm} />
         </TabsContent>
      
-        <TabsContent value="allotment">
+        <TabsContent value="engagement">
           <AllotmentList />
         </TabsContent>
       </Tabs>

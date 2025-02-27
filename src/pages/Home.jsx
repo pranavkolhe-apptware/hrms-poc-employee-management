@@ -14,16 +14,7 @@ const Home = () => {
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
         </div>
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="employees">Employees</TabsTrigger>
-            <TabsTrigger value="projects">Projects</TabsTrigger>
-            <TabsTrigger value="clients">Clients</TabsTrigger>
-            <TabsTrigger value="allotments">Allotments</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
@@ -79,20 +70,6 @@ const Home = () => {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
-          <TabsContent value="employees">
-            <EmployeeTable />
-          </TabsContent>
-          <TabsContent value="projects">
-            <ProjectTable />
-          </TabsContent>
-          <TabsContent value="clients">
-            <ClientTable />
-          </TabsContent>
-          <TabsContent value="allotments">
-            <AllotmentTable />
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   )
@@ -100,21 +77,3 @@ const Home = () => {
   export default Home
 
 
-
-
-
-// import React from 'react'
-// import { Button } from '../components/ui/button'
-
-// const Home = () => {
-//   return (
-//     <div>
-//         <div>
-//             THis is Home Page
-//         </div>
-//         <Button>Click Me</Button>
-//     </div>
-//   )
-// }
-
-// export default Home

@@ -1,180 +1,4 @@
 
-
-
-// "use client";
-
-// import React, { useState } from "react";
-// import { Plus, Search, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-// import { format } from "date-fns";
-// import { Button } from "./button";
-// import { Input } from "./input";
-// import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table";
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
-// import { Badge } from "./badge";
-// import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
-// import { Label } from "./label";
-// import { toast } from "react-hot-toast";
-// import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./alert-dialog";
-
-// export default function ProjectTable() {
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [statusFilter, setStatusFilter] = useState("all");
-//   const [priorityFilter, setPriorityFilter] = useState("all");
-//   const [projects, setProjects] = useState([
-//     { id: "PRJ001", name: "E-commerce Platform", status: "ongoing", priority: "high", dateAdded: new Date("2024-02-20") },
-//     { id: "PRJ002", name: "Mobile App Development", status: "completed", priority: "medium", dateAdded: new Date("2024-01-15") },
-//     { id: "PRJ003", name: "CRM System", status: "not-assigned", priority: "low", dateAdded: new Date("2024-02-25") },
-//     { id: "PRJ004", name: "Analytics Dashboard", status: "ongoing", priority: "medium", dateAdded: new Date("2024-02-10") },
-//     { id: "PRJ005", name: "Content Management System", status: "completed", priority: "high", dateAdded: new Date("2024-01-30") },
-//   ]);
-
-//   const [editingProject, setEditingProject] = useState(null);
-//   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-//   const [deleteProjectId, setDeleteProjectId] = useState(null);
-
-//   const filteredProjects = projects.filter((project) => {
-//     return (
-//       (project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-//         project.id.toLowerCase().includes(searchQuery.toLowerCase())) &&
-//       (statusFilter === "all" ? true : project.status === statusFilter) &&
-//       (priorityFilter === "all" ? true : project.priority === priorityFilter)
-//     );
-//   });
-
-//   const getStatusBadge = (status) => {
-//     switch (status) {
-//       case "ongoing":
-//         return <Badge className="bg-blue-500 hover:bg-blue-600">Ongoing</Badge>;
-//       case "completed":
-//         return <Badge className="bg-green-500 hover:bg-green-600">Completed</Badge>;
-//       case "not-assigned":
-//         return <Badge variant="secondary">Not Assigned</Badge>;
-//       default:
-//         return <Badge variant="outline">{status}</Badge>;
-//     }
-//   };
-
-//   const getPriorityBadge = (priority) => {
-//     switch (priority) {
-//       case "high":
-//         return <Badge className="bg-red-500 hover:bg-red-600">High</Badge>;
-//       case "medium":
-//         return <Badge className="bg-yellow-500 hover:bg-yellow-600">Medium</Badge>;
-//       case "low":
-//         return <Badge className="bg-green-500 hover:bg-green-600">Low</Badge>;
-//       default:
-//         return <Badge variant="outline">{priority}</Badge>;
-//     }
-//   };
-
-//   const handleEdit = (project) => {
-//     setEditingProject(project);
-//     setIsEditDialogOpen(true);
-//   };
-
-//   const handleDelete = (projectId) => {
-//     setDeleteProjectId(projectId);
-//   };
-
-//   const confirmDelete = () => {
-//     if (deleteProjectId) {
-//       setProjects(projects.filter((p) => p.id !== deleteProjectId));
-//       toast.success("The project has been successfully deleted.");
-//       setDeleteProjectId(null);
-//     }
-//   };
-
-//   const handleEditSubmit = (e) => {
-//     e.preventDefault();
-//     if (!editingProject) return;
-
-//     const formData = new FormData(e.currentTarget);
-//     const updatedProject = {
-//       ...editingProject,
-//       name: formData.get("name"),
-//       status: formData.get("status"),
-//       priority: formData.get("priority"),
-//     };
-
-//     setProjects(projects.map((p) => (p.id === updatedProject.id ? updatedProject : p)));
-//     toast.success("The project has been successfully updated");
-
-//     setIsEditDialogOpen(false);
-//     setEditingProject(null);
-//   };
-
-//   return (
-//     <div className="w-full max-w-6xl mx-auto p-4 space-y-6">
-//       <div className="flex items-center justify-between gap-4">
-//         <Input
-//           placeholder="Search by project name or ID..."
-//           value={searchQuery}
-//           onChange={(e) => setSearchQuery(e.target.value)}
-//         />
-//         <Select onValueChange={setStatusFilter}>
-//           <SelectTrigger>
-//             <SelectValue placeholder="Filter by status" />
-//           </SelectTrigger>
-//           <SelectContent>
-//             <SelectItem value="all">All</SelectItem>
-//             <SelectItem value="ongoing">Ongoing</SelectItem>
-//             <SelectItem value="completed">Completed</SelectItem>
-//             <SelectItem value="not-assigned">Not Assigned</SelectItem>
-//           </SelectContent>
-//         </Select>
-//         <Select onValueChange={setPriorityFilter}>
-//           <SelectTrigger>
-//             <SelectValue placeholder="Filter by priority" />
-//           </SelectTrigger>
-//           <SelectContent>
-//             <SelectItem value="all">All</SelectItem>
-//             <SelectItem value="high">High</SelectItem>
-//             <SelectItem value="medium">Medium</SelectItem>
-//             <SelectItem value="low">Low</SelectItem>
-//           </SelectContent>
-//         </Select>
-//       </div>
-
-//       <Table>
-//         <TableHeader>
-//           <TableRow>
-//             <TableHead>Project ID</TableHead>
-//             <TableHead>Name</TableHead>
-//             <TableHead>Status</TableHead>
-//             <TableHead>Priority</TableHead>
-//             <TableHead>Date Added</TableHead>
-//             <TableHead>Actions</TableHead>
-//           </TableRow>
-//         </TableHeader>
-//         <TableBody>
-//           {filteredProjects.map((project) => (
-//             <TableRow key={project.id}>
-//               <TableCell>{project.id}</TableCell>
-//               <TableCell>{project.name}</TableCell>
-//               <TableCell>{getStatusBadge(project.status)}</TableCell>
-//               <TableCell>{getPriorityBadge(project.priority)}</TableCell>
-//               <TableCell>{format(project.dateAdded, "MMM dd, yyyy")}</TableCell>
-//               <TableCell>
-//                 <Button onClick={() => handleEdit(project)}>Edit</Button>
-//                 <Button variant="destructive" onClick={() => handleDelete(project.id)}>
-//                   Delete
-//                 </Button>
-//               </TableCell>
-//             </TableRow>
-//           ))}
-//         </TableBody>
-//       </Table>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
 "use client";
 
 import React, { useState } from "react";
@@ -208,7 +32,7 @@ export default function ProjectTable() {
   const [projects, setProjects] = useState([
     { id: "PRJ001", name: "E-commerce Platform", status: "ongoing", priority: "high", dateAdded: new Date("2024-02-20") },
     { id: "PRJ002", name: "Mobile App Development", status: "completed", priority: "medium", dateAdded: new Date("2024-01-15") },
-    { id: "PRJ003", name: "CRM System", status: "not-assigned", priority: "low", dateAdded: new Date("2024-02-25") },
+    { id: "PRJ003", name: "CRM System", status: "completed", priority: "low", dateAdded: new Date("2024-02-25") },
     { id: "PRJ004", name: "Analytics Dashboard", status: "ongoing", priority: "medium", dateAdded: new Date("2024-02-10") },
     { id: "PRJ005", name: "Content Management System", status: "completed", priority: "high", dateAdded: new Date("2024-01-30") },
   ]);
@@ -319,10 +143,10 @@ export default function ProjectTable() {
             <SelectItem value="all" ><span className="text-gray-500">Project Status</span></SelectItem>
             <SelectItem value="ongoing">Ongoing</SelectItem>
             <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="not-assigned">Not Assigned</SelectItem>
+            {/* <SelectItem value="not-assigned">Not Assigned</SelectItem> */}
           </SelectContent>
         </Select>
-        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+        {/* <Select value={priorityFilter} onValueChange={setPriorityFilter}>
           <SelectTrigger>
             <SelectValue placeholder="Filter by priority" />
           </SelectTrigger>
@@ -332,7 +156,7 @@ export default function ProjectTable() {
             <SelectItem value="medium">Medium</SelectItem>
             <SelectItem value="low">Low</SelectItem>
           </SelectContent>
-        </Select>
+        </Select> */}
         <Button onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Project
@@ -343,7 +167,7 @@ export default function ProjectTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Project ID</TableHead>
+            {/* <TableHead>Project ID</TableHead> */}
             <TableHead>Name</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Priority</TableHead>
@@ -354,18 +178,18 @@ export default function ProjectTable() {
         <TableBody>
           {filteredProjects.map((project) => (
             <TableRow key={project.id}>
-              <TableCell>{project.id}</TableCell>
+              {/* // <TableCell>{project.id}</TableCell> */}
               <TableCell>{project.name}</TableCell>
               <TableCell>{getStatusBadge(project.status)}</TableCell>
               <TableCell>{getPriorityBadge(project.priority)}</TableCell>
               <TableCell>{format(project.dateAdded, "MMM dd, yyyy")}</TableCell>
               <TableCell className="flex items-center gap-2">
-                <Button>
+                <Button onClick={() => handleEdit(project)}>
 
-                  <Pencil className="w-4 h-4"  onClick={() => handleEdit(project)}/>
+                  <Pencil className="w-4 h-4"  />
                 </Button>
-                <Button variant="destructive" >
-                  <Trash2 className="w-4 h-4" onClick={() => handleDelete(project.id)} />
+                <Button variant="destructive" onClick={() => handleDelete(project.id)}>
+                  <Trash2 className="w-4 h-4"  />
                 </Button>
               </TableCell>
             </TableRow>

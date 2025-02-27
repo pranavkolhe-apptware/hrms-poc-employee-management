@@ -20,7 +20,6 @@ import { Button } from "../components/ui/button"
 import { PlusCircle } from "lucide-react"
 import SearchBar from "../components/search-bar"
 import EmployeeList from "../components/employee-list"
-import ProjectList from "../components/project-list"
 import AllotmentList from "../components/allotment-list"
 import EmployeeForm from "../components/employee-form"
 
@@ -42,17 +41,14 @@ const People = () => {
         </Button>
       </div>
       <Tabs defaultValue="employees" onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="employees">Employees</TabsTrigger>
-          <TabsTrigger value="projects">Projects</TabsTrigger>
           <TabsTrigger value="allotment">Allotment</TabsTrigger>
         </TabsList>
         <TabsContent value="employees">
           <EmployeeList searchTerm={searchTerm} />
         </TabsContent>
-        <TabsContent value="projects">
-          <ProjectList />
-        </TabsContent>
+     
         <TabsContent value="allotment">
           <AllotmentList />
         </TabsContent>

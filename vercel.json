@@ -1,15 +1,19 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ]
-}
+    "builds": [
+        {
+          "src": "package.json",
+          "use": "@vercel/static-build",
+          "config": { "distDir": "dist" }
+        }
+      ],
+    "rewrites": [
+      { "source": "/dashboard", "destination": "/" },
+      { "source": "/dashboard/people", "destination": "/" },
+      { "source": "/dashboard/projects", "destination": "/" },
+      { "source": "/achievements", "destination": "/" },
+      { "source": "/dashboard/clients", "destination": "/" },
+      { "source": "/clients/:clientId", "destination": "/" },
+      { "source": "/(.*)", "destination": "/" }
+    ]
+  }
+  

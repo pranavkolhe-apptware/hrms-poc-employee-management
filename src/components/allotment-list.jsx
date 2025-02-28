@@ -617,7 +617,7 @@
 import React,{ useState, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
 import { Button } from "./ui/button"
-import { Pencil, Trash2, PlusCircle, Eye, ChevronDown, ChevronRight } from "lucide-react"
+import { Pencil, Trash2, PlusCircle, Eye, ChevronDown, ChevronRight, BriefcaseBusinessIcon, BriefcaseIcon } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "./ui/dialog"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
@@ -939,7 +939,16 @@ const AllotmentList = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        {getProjectName(allotment.projectId)}
+                        {/* {getProjectName(allotment.projectId)} */}
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          onClick={() => handleView(allotment.employeeId)}
+                          title="View employee projects"
+                        >
+                          {/* <Eye className="h-4 w-4" /> */}
+                          <BriefcaseIcon className="h-4 w-4" />
+                        </Button>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -949,19 +958,20 @@ const AllotmentList = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-center space-x-2">
-                        <Button 
+                        {/* <Button 
                           variant="outline" 
                           size="icon" 
                           onClick={() => handleView(allotment.employeeId)}
                           title="View employee projects"
                         >
                           <Eye className="h-4 w-4" />
-                        </Button>
+                        </Button> */}
                         <Button 
                           variant="outline" 
                           size="icon" 
                           onClick={() => handleEdit(allotment)}
                           title="Edit allotment"
+                          disabled
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -971,6 +981,7 @@ const AllotmentList = () => {
                           onClick={() => handleDelete(allotment.id)}
                           className="text-destructive hover:text-destructive"
                           title="Delete allotment"
+                          disabled
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -983,18 +994,18 @@ const AllotmentList = () => {
                     <TableRow className="bg-blue-50/50 dark:bg-blue-950/20">
                       <TableCell colSpan={4} className="p-0">
                         <div className="pl-10 pr-4 py-2">
-                          <div className="text-sm font-medium text-muted-foreground mb-2">
+                          {/* <div className="text-sm font-medium text-muted-foreground mb-2">
                             Shadow Employees
-                          </div>
+                          </div> */}
                           <Table>
-                            <TableHeader>
+                            {/* <TableHeader>
                               <TableRow>
                                 <TableHead>Employee</TableHead>
                                 <TableHead>Project</TableHead>
                                 <TableHead>Allocation</TableHead>
                                 <TableHead className="text-center">Actions</TableHead>
                               </TableRow>
-                            </TableHeader>
+                            </TableHeader> */}
                             <TableBody>
                               {employeesWithShadows[allotment.id].map(shadowAllotment => (
                                 <TableRow key={shadowAllotment.id}>
@@ -1014,6 +1025,7 @@ const AllotmentList = () => {
                                         size="icon" 
                                         onClick={() => handleEdit(shadowAllotment)}
                                         title="Edit allotment"
+                                        disabled
                                       >
                                         <Pencil className="h-4 w-4" />
                                       </Button>
@@ -1023,6 +1035,7 @@ const AllotmentList = () => {
                                         onClick={() => handleDelete(shadowAllotment.id)}
                                         className="text-destructive hover:text-destructive"
                                         title="Delete allotment"
+                                        disabled
                                       >
                                         <Trash2 className="h-4 w-4" />
                                       </Button>

@@ -915,7 +915,7 @@ const AllotmentList = () => {
                 <React.Fragment key={allotment.id}>
                   <TableRow 
                     className={cn(
-                      hasShadowEmployees(allotment.id) ? "bg-blue-50 dark:bg-blue-950/30" : "",
+                      hasShadowEmployees(allotment.id) ? "bg-gray-50 dark:bg-blue-950/30" : "bg-blue-50",
                       expandedRows[allotment.id] ? "border-b-0" : ""
                     )}
                   >
@@ -991,9 +991,9 @@ const AllotmentList = () => {
                   
                   {/* Shadow Employees Rows */}
                   {expandedRows[allotment.id] && employeesWithShadows[allotment.id] && (
-                    <TableRow className="bg-blue-50/50 dark:bg-blue-950/20">
-                      <TableCell colSpan={4} className="p-0">
-                        <div className="pl-10 pr-4 py-2">
+                    <TableRow className="bg-white dark:bg-blue-950/20">
+                      <TableCell colSpan={4}>
+                        <div className="pl-10 mt-[-7px] mb-[-7px]">
                           {/* <div className="text-sm font-medium text-muted-foreground mb-2">
                             Shadow Employees
                           </div> */}
@@ -1006,7 +1006,7 @@ const AllotmentList = () => {
                                 <TableHead className="text-center">Actions</TableHead>
                               </TableRow>
                             </TableHeader> */}
-                            <TableBody>
+                            <TableBody className="py-0">
                               {employeesWithShadows[allotment.id].map(shadowAllotment => (
                                 <TableRow key={shadowAllotment.id}>
                                   <TableCell className="font-medium">

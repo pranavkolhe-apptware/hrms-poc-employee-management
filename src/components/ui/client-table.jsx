@@ -476,10 +476,10 @@ export default function ClientTable() {
           className="w-full md:max-w-xs"
         />
         <div className="cursor-not-allowed hover:cursor-[block]">
-          <Button onClick={() => setIsAddDialogOpen(true)} disabled >
+          {/* <Button onClick={() => setIsAddDialogOpen(true)} disabled >
             <Plus className="w-4 h-4 mr-2" />
             Add Client
-          </Button>
+          </Button> */}
         </div>
       </div>
 

@@ -844,8 +844,8 @@ const EmployeeList = () => {
 
   return (
     <div className="space-y-8 p-4 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="relative w-full max-w-sm">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+        {/* <div className="relative w-full max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by Employee ID or Name"
@@ -868,7 +868,7 @@ const EmployeeList = () => {
               setCurrentPage(1);
             }}
           />
-        </div>
+        </div> */}
 
         <div className="flex justify-end">
           <Button 
@@ -958,6 +958,7 @@ const EmployeeList = () => {
                             handleEdit(employee);
                           }}
                           className="border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-colors p-2 rounded"
+                          disabled
                         >
                           <Pencil className="h-4 w-4 text-blue-500" />
                         </Button>
@@ -969,6 +970,7 @@ const EmployeeList = () => {
                             handleDelete(employee.id);
                           }}
                           className="border-red-200 hover:border-red-400 hover:bg-red-50 transition-colors p-2 rounded"
+                          disabled
                         >
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>

@@ -582,7 +582,7 @@ export default function ProjectTable() {
                   View Project Team
                 </Button>
               </TableCell>
-              <TableCell>{format(project.dateAdded, "dd-M-yyyy")}</TableCell>
+              <TableCell>{format(project.dateAdded, "dd-MM-yyyy")}</TableCell>
               <TableCell className="flex items-center gap-2">
                 <Button onClick={() => handleEdit(project)} disabled>
                   <Pencil className="w-4 h-4" />

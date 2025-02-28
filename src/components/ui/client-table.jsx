@@ -498,7 +498,7 @@ export default function ClientTable() {
               <TableCell>{client.name}</TableCell>
               <TableCell>{client.managingExecutive}</TableCell>
               <TableCell>{client.workLocation}</TableCell>
-              <TableCell>{format(client.dateAdded, "d-M-yyyy")}</TableCell>
+              <TableCell>{format(client.dateAdded, "dd-MM-yyyy")}</TableCell>
               <TableCell className="flex items-center gap-2">
                 <Button onClick={() => handleEdit(client)} disabled>
                   <Pencil className="w-4 h-4" />

@@ -475,7 +475,7 @@ export default function ClientTable() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full md:max-w-xs"
         />
-        <Button onClick={() => setIsAddDialogOpen(true)}>
+        <Button onClick={() => setIsAddDialogOpen(true)} disabled>
           <Plus className="w-4 h-4 mr-2" />
           Add Client
         </Button>
@@ -500,10 +500,10 @@ export default function ClientTable() {
               <TableCell>{client.workLocation}</TableCell>
               <TableCell>{format(client.dateAdded, "d-M-yyyy")}</TableCell>
               <TableCell className="flex items-center gap-2">
-                <Button onClick={() => handleEdit(client)}>
+                <Button onClick={() => handleEdit(client)} disabled>
                   <Pencil className="w-4 h-4" />
                 </Button>
-                <Button variant="destructive" onClick={() => handleDelete(client.id)}>
+                <Button variant="destructive" onClick={() => handleDelete(client.id)} disabled>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </TableCell>

@@ -429,6 +429,14 @@ const dummyProjects = [
     teams: ["Team D", "Team E"],
     dateAdded: new Date("2024-02-25"),
   },
+  {
+    id: "PRJ004",
+    name: "Farmer App",
+    status: "ongoing",
+    client: "Acme Corp",
+    teams: ["Team D", "Team E"],
+    dateAdded: new Date("2024-02-25"),
+  },
 ];
 
 // Dummy clients list for the dropdown
@@ -576,10 +584,10 @@ export default function ProjectTable() {
               </TableCell>
               <TableCell>{format(project.dateAdded, "dd-M-yyyy")}</TableCell>
               <TableCell className="flex items-center gap-2">
-                <Button onClick={() => handleEdit(project)}>
+                <Button onClick={() => handleEdit(project)} disabled>
                   <Pencil className="w-4 h-4" />
                 </Button>
-                <Button variant="destructive" onClick={() => handleDelete(project.id)}>
+                <Button variant="destructive" onClick={() => handleDelete(project.id)} disabled>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </TableCell>
@@ -724,7 +732,7 @@ export default function ProjectTable() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">Add Project</Button>
+                <Button type="submit" >Add Project</Button>
               </DialogFooter>
             </form>
           </DialogContent>

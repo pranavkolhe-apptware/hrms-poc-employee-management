@@ -442,6 +442,7 @@ const initialEmployees = [
     personalEmail: "john.personal@example.com",
     officeEmail: "john.doe@company.com",
     dateOfJoining: "2020-05-15",
+    yoe: 3.2,
     designation: "Senior Developer",
     department: "Technical",
     status: "Billable",
@@ -454,6 +455,7 @@ const initialEmployees = [
     personalEmail: "jane.personal@example.com",
     officeEmail: "jane.smith@company.com",
     dateOfJoining: "2019-09-22",
+    yoe: 3.1,
     designation: "Project Manager",
     department: "Technical",
     status: "Billable",
@@ -466,6 +468,7 @@ const initialEmployees = [
     personalEmail: "alice.personal@example.com",
     officeEmail: "alice.johnson@company.com",
     dateOfJoining: "2021-03-10",
+    yoe: 1.2,
     designation: "HR Specialist",
     department: "HR",
     status: "Non-Billable",
@@ -478,6 +481,7 @@ const initialEmployees = [
     personalEmail: "bob.personal@example.com",
     officeEmail: "bob.williams@company.com",
     dateOfJoining: "2018-11-30",
+    yoe: 7.8,
     designation: "Sales Executive",
     department: "Sales",
     status: "Billable",
@@ -490,6 +494,7 @@ const initialEmployees = [
     personalEmail: "charlie.personal@example.com",
     officeEmail: "charlie.brown@company.com",
     dateOfJoining: "2022-07-07",
+    yoe: 9.4,
     designation: "Backend Developer",
     department: "Technical",
     status: "Billable",
@@ -502,7 +507,7 @@ const initialEmployees = [
     personalEmail: "diana.personal@example.com",
     officeEmail: "diana.clark@company.com",
     dateOfJoining: "2020-01-25",
-    dateOfLeaving: "2023-06-15",
+    yoe: 5.8,
     designation: "UX Designer",
     department: "Technical",
     status: "Non-Billable",
@@ -515,6 +520,7 @@ const initialEmployees = [
     personalEmail: "ethan.personal@example.com",
     officeEmail: "ethan.hunt@company.com",
     dateOfJoining: "2019-06-18",
+    yoe: 6.3,
     designation: "DevOps Engineer",
     department: "Technical",
     status: "Billable",
@@ -527,6 +533,7 @@ const initialEmployees = [
     personalEmail: "fiona.personal@example.com",
     officeEmail: "fiona.green@company.com",
     dateOfJoining: "2021-12-03",
+    yoe: 2.4,
     designation: "Marketing Specialist",
     department: "Sales",
     status: "Non-Billable",
@@ -539,6 +546,7 @@ const initialEmployees = [
     personalEmail: "george.personal@example.com",
     officeEmail: "george.lee@company.com",
     dateOfJoining: "2018-08-20",
+    yoe: 8.1,
     designation: "System Administrator",
     department: "Technical",
     status: "Billable",
@@ -551,6 +559,7 @@ const initialEmployees = [
     personalEmail: "hannah.personal@example.com",
     officeEmail: "hannah.white@company.com",
     dateOfJoining: "2022-04-12",
+    yoe: 0.7,
     designation: "HR Manager",
     department: "HR",
     status: "Non-Billable",
@@ -886,7 +895,7 @@ const EmployeeList = () => {
             <TableRow className="bg-gray-50 dark:bg-gray-800">
               <TableHead className="w-[80px] font-semibold">Emp ID</TableHead>
               <TableHead className="font-semibold">Name</TableHead>
-              <TableHead className="font-semibold">Date of Joining</TableHead>
+              <TableHead className="font-semibold">YOE</TableHead>
               <TableHead className="font-semibold">Primary Skills</TableHead>
               <TableHead className="font-semibold">Secondary Skills</TableHead>
               <TableHead className="font-semibold">Status</TableHead>
@@ -908,7 +917,7 @@ const EmployeeList = () => {
                     <TableCell className="font-medium">{employee.id}</TableCell>
                     <TableCell className="font-medium">{employee.name}</TableCell>
                     <TableCell>
-                      {new Date(employee.dateOfJoining).toISOString().split('T')[0].split('-').reverse().join('-')}
+                      {employee.yoe} {employee.yoe > 1 ? "years" : "year"}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">

@@ -1093,7 +1093,7 @@ const EmployeeForm = ({ employee, onClose, onSubmit }) => {
       status: "Non-Billable", // Default to Non-Billable as requested
       primarySkills: [],
       secondarySkills: [],
-      dateOfLeaving: "",
+      yoe: "",
     }
   );
 
@@ -1138,6 +1138,10 @@ const EmployeeForm = ({ employee, onClose, onSubmit }) => {
 
     if (!formData.dateOfJoining) {
       newErrors.dateOfJoining = "Date of joining is required";
+    }
+
+    if (!formData.yoe) {
+      newErrors.yoe = "Years of experience is required";
     }
 
     if (!formData.designation.trim()) {
@@ -1492,14 +1496,14 @@ const EmployeeForm = ({ employee, onClose, onSubmit }) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="dateOfLeaving" className="text-sm">
-                    Date of Leaving (if applicable)
+                  <Label htmlFor="yoe" className="text-sm">
+                    Years of Experience
                   </Label>
                   <Input
-                    id="dateOfLeaving"
-                    name="dateOfLeaving"
-                    type="date"
-                    value={formData.dateOfLeaving || ""}
+                    id="yoe"
+                    name="yoe"
+                    type="float"
+                    value={formData.yoe || ""}
                     onChange={handleChange}
                     className="border-input hover:border-neutral-400 transition-colors focus:border-primary"
                   />

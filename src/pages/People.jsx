@@ -10,8 +10,6 @@ import AllotmentList from "../components/allotment-list"
 import EmployeeForm from "../components/employee-form"
 
 
-
-
 const People = () => {
   const [showEmployeeForm, setShowEmployeeForm] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")

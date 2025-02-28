@@ -149,12 +149,12 @@ export default function ProjectTable() {
     <div className="w-full max-w-7xl mx-auto mt-5 p-4 space-y-6">
       {/* Search and Filter Controls */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <Input
+        {/* <Input
           placeholder="Search by project name or ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full md:max-w-xs"
-        />
+        /> */}
         <Select value={clientFilter} onValueChange={setClientFilter}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder="Filter by client" />
@@ -203,12 +203,16 @@ export default function ProjectTable() {
               </TableCell>
               <TableCell>{format(project.dateAdded, "dd-MM-yyyy")}</TableCell>
               <TableCell className="flex items-center gap-2">
+              <div className="cursor-not-allowed hover:cursor-[block]">
                 <Button onClick={() => handleEdit(project)} disabled>
                   <Pencil className="w-4 h-4" />
                 </Button>
+              </div>
+              <div className="cursor-not-allowed hover:cursor-[block]">
                 <Button variant="destructive" onClick={() => handleDelete(project.id)} disabled>
                   <Trash2 className="w-4 h-4" />
                 </Button>
+              </div>
               </TableCell>
             </TableRow>
           ))}

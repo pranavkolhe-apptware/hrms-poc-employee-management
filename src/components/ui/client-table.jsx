@@ -475,10 +475,12 @@ export default function ClientTable() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full md:max-w-xs"
         />
-        <Button onClick={() => setIsAddDialogOpen(true)} disabled>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Client
-        </Button>
+        <div className="cursor-not-allowed hover:cursor-[block]">
+          <Button onClick={() => setIsAddDialogOpen(true)} disabled >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Client
+          </Button>
+        </div>
       </div>
 
       {/* Clients Table */}
@@ -500,12 +502,16 @@ export default function ClientTable() {
               <TableCell>{client.workLocation}</TableCell>
               <TableCell>{format(client.dateAdded, "dd-MM-yyyy")}</TableCell>
               <TableCell className="flex items-center gap-2">
+              <div className="cursor-not-allowed hover:cursor-[block]">
                 <Button onClick={() => handleEdit(client)} disabled>
                   <Pencil className="w-4 h-4" />
                 </Button>
+              </div>
+              <div className="cursor-not-allowed hover:cursor-[block]">
                 <Button variant="destructive" onClick={() => handleDelete(client.id)} disabled>
                   <Trash2 className="w-4 h-4" />
                 </Button>
+              </div>
               </TableCell>
             </TableRow>
           ))}

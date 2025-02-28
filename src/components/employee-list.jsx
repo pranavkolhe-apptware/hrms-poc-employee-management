@@ -548,6 +548,7 @@ const EmployeeList = () => {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end space-x-2">
+                      <div className="cursor-not-allowed hover:cursor-[block]">
                         <Button 
                           variant="outline" 
                           size="icon" 
@@ -560,6 +561,8 @@ const EmployeeList = () => {
                         >
                           <Pencil className="h-4 w-4 text-blue-500" />
                         </Button>
+                      </div>
+                      <div className="cursor-not-allowed hover:cursor-[block]">
                         <Button 
                           variant="outline" 
                           size="icon" 
@@ -572,6 +575,7 @@ const EmployeeList = () => {
                         >
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>

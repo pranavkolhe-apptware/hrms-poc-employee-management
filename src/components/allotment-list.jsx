@@ -354,25 +354,29 @@ const AllotmentList = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </Button> */}
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
-                          onClick={() => handleEdit(allotment)}
-                          title="Edit allotment"
-                          disabled
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
-                          onClick={() => handleDelete(allotment.id)}
-                          className="text-destructive hover:text-destructive"
-                          title="Delete allotment"
-                          disabled
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="cursor-not-allowed hover:cursor-[block]">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            onClick={() => handleEdit(allotment)}
+                            title="Edit allotment"
+                            disabled
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="cursor-not-allowed hover:cursor-[block]">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            onClick={() => handleDelete(allotment.id)}
+                            className="text-destructive hover:text-destructive"
+                            title="Delete allotment"
+                            disabled
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -408,25 +412,29 @@ const AllotmentList = () => {
                                   </TableCell>
                                   <TableCell>
                                     <div className="flex justify-center space-x-2">
-                                      <Button 
-                                        variant="outline" 
-                                        size="icon" 
-                                        onClick={() => handleEdit(shadowAllotment)}
-                                        title="Edit allotment"
-                                        disabled
-                                      >
-                                        <Pencil className="h-4 w-4" />
-                                      </Button>
-                                      <Button 
-                                        variant="outline" 
-                                        size="icon" 
-                                        onClick={() => handleDelete(shadowAllotment.id)}
-                                        className="text-destructive hover:text-destructive"
-                                        title="Delete allotment"
-                                        disabled
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
+                                      <div className="cursor-not-allowed hover:cursor-[block]">
+                                        <Button 
+                                          variant="outline" 
+                                          size="icon" 
+                                          onClick={() => handleEdit(shadowAllotment)}
+                                          title="Edit allotment"
+                                          disabled
+                                        >
+                                          <Pencil className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                      <div className="cursor-not-allowed hover:cursor-[block]">
+                                        <Button 
+                                          variant="outline" 
+                                          size="icon" 
+                                          onClick={() => handleDelete(shadowAllotment.id)}
+                                          className="text-destructive hover:text-destructive"
+                                          title="Delete allotment"
+                                          disabled
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </div>
                                     </div>
                                   </TableCell>
                                 </TableRow>

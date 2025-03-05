@@ -34,6 +34,8 @@ export default function ClientTable() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [deleteClientId, setDeleteClientId] = useState(null);
+  // 1. Add this state at the top of your component along with other state declarations
+const [isAddingClient, setIsAddingClient] = useState(false);
 
   // newClient state for adding a client
   const [newClient, setNewClient] = useState({
@@ -48,7 +50,7 @@ export default function ClientTable() {
   // Fetch client list from API on mount
   useEffect(() => {
     axios
-      .get("https://hrms-au5y.onrender.com/client/listClients")
+      .get(`${import.meta.env.VITE_BACKEND_API_URL}client/listClients`)
       .then((response) => {
         setClients(response.data);
         setLoading(false);
@@ -89,10 +91,10 @@ const handleEditSubmit = async (e) => {
     };
 
     // Send PUT request with full payload
-    await axios.put("https://hrms-au5y.onrender.com/client/update", updatedClient);
+    await axios.put(`${import.meta.env.VITE_BACKEND_API_URL}client/update", updatedClient`);
 
     // Refresh the client list after successful update
-    const { data } = await axios.get("https://hrms-au5y.onrender.com/client/listClients");
+    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}client/listClients`);
     setClients(data);
 
     toast.success("Client updated successfully");
@@ -108,10 +110,11 @@ const handleEditSubmit = async (e) => {
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://hrms-au5y.onrender.com/client/add", newClient);
+      setIsAddingClient(true);
+      await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}client/add", newClient`);
       
       // Refresh the client list after successful addition
-      const { data } = await axios.get("https://hrms-au5y.onrender.com/client/listClients");
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}client/listClients`);
       setClients(data);
       
       toast.success("New client added successfully!");
@@ -127,8 +130,14 @@ const handleEditSubmit = async (e) => {
     } catch (error) {
       console.error("Add client error:", error);
       toast.error(`Failed to add client: ${error.message}`);
+    }finally {
+      setIsAddingClient(false);
     }
   };
+
+
+
+
 
   // Delete handler
   const handleDelete = (clientId) => {
@@ -138,7 +147,7 @@ const handleEditSubmit = async (e) => {
   const confirmDelete = async () => {
     if (deleteClientId) {
       try {
-        await axios.delete("https://hrms-au5y.onrender.com/client/delete", {
+        await axios.delete(`${import.meta.env.VITE_BACKEND_API_URL}client/delete`, {
           params: { id: deleteClientId },
         });
         // Refresh the clients list after successful deletion
@@ -159,7 +168,7 @@ const handleEditSubmit = async (e) => {
   if (loading) return <p>Loading clients...</p>;
 
   return (
-    <div className="w-full max-w-7xl mx-auto mt-5 p-4 space-y-6">
+    <div className="w-full max-w-8xl mx-auto mt-5 p-4 space-y-6">
       {/* Search Controls */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <Input
@@ -176,6 +185,7 @@ const handleEditSubmit = async (e) => {
       </div>
 
       {/* Clients Table */}
+      
       <Table>
         <TableHeader>
           <TableRow>
@@ -337,14 +347,21 @@ const handleEditSubmit = async (e) => {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" className="mt-2">
-                  Add Client
+                <Button type="submit" disabled={isAddingClient} className="mt-2">
+                {isAddingClient ? "Loading..." : "Add Client"}
                 </Button>
               </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
       )}
+
+
+
+
+
+
+
       {/* Delete Confirmation AlertDialog */}
       {deleteClientId && (
         <AlertDialog

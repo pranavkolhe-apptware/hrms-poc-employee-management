@@ -24,6 +24,9 @@ import {
   AlertDialogTitle,
 } from "./alert-dialog";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 export default function ProjectTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [clientFilter, setClientFilter] = useState("all");
@@ -40,26 +43,33 @@ export default function ProjectTable() {
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
   const [modalProject, setModalProject] = useState(null);
 
+  const [availableClients, setAvailableClients] = useState([]);
+
   // New project state for the add form (if needed)
   const [newProject, setNewProject] = useState({
     name: "",
+    endDate: "",
     clientId: "",
     billingType: ""
   });
 
   // Fetch projects from the API on mount
   useEffect(() => {
-    axios
-      .get("https://hrms-au5y.onrender.com/project/listProjects")
-      .then((response) => {
-        setProjects(response.data);
+    const fetchClients = axios.get(`${import.meta.env.VITE_BACKEND_API_URL}client/listClients`);
+    const fetchProjects = axios.get(`${import.meta.env.VITE_BACKEND_API_URL}project/listProjects`);
+
+    Promise.all([fetchClients, fetchProjects])
+      .then(([clientsResponse, projectsResponse]) => {
+        setAvailableClients(clientsResponse.data);
+        setProjects(projectsResponse.data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching projects:", error);
+        console.error("Error fetching data:", error);
         setLoading(false);
       });
   }, []);
+
 
   // Filter projects (by project name or client name)
   const filteredProjects = projects.filter((project) => {
@@ -84,7 +94,7 @@ export default function ProjectTable() {
 
     try {
       await axios.patch(
-        `https://hrms-au5y.onrender.com/project/${editingProject.id}/updateStatus?status=${editingProject.projectStatus}`
+        `${import.meta.env.VITE_BACKEND_API_URL}project/${editingProject.id}/updateStatus?status=${editingProject.projectStatus}`
       );
       toast.success("Project status updated successfully!");
 
@@ -106,17 +116,19 @@ export default function ProjectTable() {
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://hrms-au5y.onrender.com/project/add", newProject);
+      await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}project/add`, newProject);
       toast.success("New project added successfully!");
+      console.log("New project:", newProject);
       setIsAddDialogOpen(false);
       // Optionally refresh the projects list:
-      const { data } = await axios.get("https://hrms-au5y.onrender.com/project/listProjects");
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}project/listProjects`);
       setProjects(data);
       // Reset form state
       setNewProject({
         name: "",
         clientId: "",
-        billingType: ""
+        billingType: "",
+        endDate: ""
       });
     } catch (error) {
       console.error("Error adding project:", error);
@@ -133,7 +145,7 @@ export default function ProjectTable() {
     if (deleteProjectId) {
       try {
         // Call DELETE API
-        await axios.delete(`https://hrms-au5y.onrender.com/project/delete?id=${deleteProjectId}`);
+        await axios.delete(`${import.meta.env.VITE_BACKEND_API_URL}project/delete?id=${deleteProjectId}`);
 
         // Update local state only after successful API call
         setProjects(projects.filter((prj) => prj.id !== deleteProjectId));
@@ -155,7 +167,7 @@ export default function ProjectTable() {
   if (loading) return <p>Loading projects...</p>;
 
   return (
-    <div className="w-full max-w-7xl mx-auto mt-5 p-4 space-y-6">
+    <div className="w-full max-w-8xl mx-auto mt-5 p-4 space-y-6">
       {/* Search and Filter Controls */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <Input
@@ -180,7 +192,8 @@ export default function ProjectTable() {
       </div>
 
       {/* Projects Table */}
-      <Table>
+
+      <Table >
         <TableHeader>
           <TableRow>
             <TableHead>Project Name</TableHead>
@@ -231,6 +244,7 @@ export default function ProjectTable() {
         </TableBody>
       </Table>
 
+
       {/* Edit Dialog (Placeholder) */}
       {isEditDialogOpen && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -258,7 +272,7 @@ export default function ProjectTable() {
                 </Select>
               </div>
               <DialogFooter>
-                <Button type="submit">Save Changes</Button>
+                <Button type="submit" className="mt-3">Save Changes</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -266,6 +280,7 @@ export default function ProjectTable() {
       )}
 
       {/* Add Dialog (Placeholder) */}
+      {/* // 3. Update the Add Dialog form in your component as follows: */}
       {isAddDialogOpen && (
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogContent>
@@ -280,29 +295,65 @@ export default function ProjectTable() {
                     id="name"
                     name="name"
                     value={newProject.name}
-                    onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                    onChange={(e) =>
+                      setNewProject({ ...newProject, name: e.target.value })
+                    }
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="clientId">Client Id</Label>
-                  <Input
-                    id="clientId"
-                    name="clientId"
-                    value={newProject.clientId}
-                    onChange={(e) => setNewProject({ ...newProject, clientId: e.target.value })}
+                  <Label htmlFor="endDate">End Date</Label>
+                  <DatePicker
+                    id="endDate"
+                    selected={newProject.endDate ? new Date(newProject.endDate) : null}
+                    onChange={(date) =>
+                      setNewProject({ ...newProject, endDate: date.toISOString().split("T")[0] })
+                    }
+                    dateFormat="yyyy-MM-dd"
+                    placeholderText="Select End Date"
+                    className="input" // Adjust or remove based on your styling
                     required
                   />
+                </div>
+                <div>
+                  <Label htmlFor="clientId">Client Name</Label>
+                  <Select
+                    value={newProject.clientId}
+                    onValueChange={(value) =>
+                      setNewProject({ ...newProject, clientId: value })
+                    }
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Select Client" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableClients.map((client) => (
+                        <SelectItem
+                          key={client.id}
+                          value={client.id.toString()}
+                        >
+                          {client.clientName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="billingType">Billing Type</Label>
-                  <Input
-                    id="billingType"
-                    name="billingType"
+                  <Select
                     value={newProject.billingType}
-                    onChange={(e) => setNewProject({ ...newProject, billingType: e.target.value })}
-                    required
-                  />
+                    onValueChange={(value) =>
+                      setNewProject({ ...newProject, billingType: value })
+                    }
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Select Billing Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BILLABLE">BILLABLE</SelectItem>
+                      <SelectItem value="NON_BILLABLE">NON_BILLABLE</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <DialogFooter>
@@ -312,7 +363,6 @@ export default function ProjectTable() {
           </DialogContent>
         </Dialog>
       )}
-
 
 
       {deleteProjectId && (

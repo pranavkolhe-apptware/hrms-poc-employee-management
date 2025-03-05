@@ -26,10 +26,11 @@ import {
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { set } from "date-fns";
 
 export default function ProjectTable() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [clientFilter, setClientFilter] = useState("all");
+  const [clientFilter, setClientFilter] = useState("All");
 
   // Fetch projects from API (instead of using static dummy data)
   const [projects, setProjects] = useState([]);
@@ -44,11 +45,14 @@ export default function ProjectTable() {
   const [modalProject, setModalProject] = useState(null);
 
   const [availableClients, setAvailableClients] = useState([]);
+  const [isAddingProject, setIsAddingProject] = useState(false);
+  const [isEditingProject, setIsEditingProject] = useState(false);
 
   // New project state for the add form (if needed)
   const [newProject, setNewProject] = useState({
     name: "",
     endDate: "",
+    startDate: "",
     clientId: "",
     billingType: ""
   });
@@ -62,6 +66,9 @@ export default function ProjectTable() {
       .then(([clientsResponse, projectsResponse]) => {
         setAvailableClients(clientsResponse.data);
         setProjects(projectsResponse.data);
+
+        console.log("Fetched projects:", projectsResponse.data);
+        console.log("Fetched clients:", clientsResponse.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -82,40 +89,59 @@ export default function ProjectTable() {
   });
 
   // Handler stubs (edit, add, delete, team modal)
-  const handleEdit = (project) => {
-    setEditingProject(project);
+  function handleEdit(project) {
+    setEditingProject({
+      id: project.id,
+      name: project.projectName || "",
+      clientId: project.client?.id?.toString() || "",
+      billingType: project.billingType || "BILLABLE",
+      projectStatus: project.projectStatus || "ONGOING",
+      startDate: project.startDate || "",
+      endDate: project.endDate || "",
+    });
     setIsEditDialogOpen(true);
-  };
+  }
 
   // Update the handleEditSubmit function:
-  const handleEditSubmit = async (e) => {
+  async function handleEditSubmit(e) {
     e.preventDefault();
     if (!editingProject) return;
-
     try {
-      await axios.patch(
-        `${import.meta.env.VITE_BACKEND_API_URL}project/${editingProject.id}/updateStatus?status=${editingProject.projectStatus}`
+      console.log("Editing project:", editingProject);
+      setIsEditingProject(true);
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_API_URL}project/update?id=${editingProject.id}`,
+        {
+          name: editingProject.name,
+          clientId: Number(editingProject.clientId),
+          billingType: editingProject.billingType,
+          startDate: editingProject.startDate,
+          endDate: editingProject.endDate,
+          projectStatus: editingProject.projectStatus,
+        }
       );
-      toast.success("Project status updated successfully!");
-
-      // Update local state
-      setProjects(projects.map(project =>
-        project.id === editingProject.id
-          ? { ...project, projectStatus: editingProject.projectStatus }
-          : project
-      ));
-
+      toast.success("Project updated successfully!");
+  
+      // Optionally refresh your local list or re-fetch projects:
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKEND_API_URL}project/listProjects`
+      );
+      setProjects(data);
+  
       setIsEditDialogOpen(false);
       setEditingProject(null);
     } catch (error) {
-      console.error("Error updating status:", error);
-      toast.error("Failed to update project status");
+      console.error("Error updating project:", error);
+      toast.error("Failed to update project");
+    }finally{
+      setIsEditingProject(false);
     }
-  };
+  }
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
+     setIsAddingProject(true); 
       await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}project/add`, newProject);
       toast.success("New project added successfully!");
       console.log("New project:", newProject);
@@ -133,6 +159,8 @@ export default function ProjectTable() {
     } catch (error) {
       console.error("Error adding project:", error);
       toast.error("Failed to add project!");
+    }finally{
+      setIsAddingProject(false);
     }
   };
 
@@ -253,117 +281,242 @@ export default function ProjectTable() {
               <DialogTitle>Edit Project</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleEditSubmit}>
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <Label htmlFor="editName">Project Name</Label>
+      <Input
+        id="editName"
+        value={editingProject?.name}
+        onChange={(e) =>
+          setEditingProject({ ...editingProject, name: e.target.value })
+        }
+        required
+      />
+    </div>
+    <div>
+      <Label htmlFor="editClientId">Client Name</Label>
+      <Select
+        value={editingProject?.clientId}
+        onValueChange={(value) =>
+          setEditingProject({ ...editingProject, clientId: value })
+        }
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select Client" />
+        </SelectTrigger>
+        <SelectContent>
+          {availableClients.map((client) => (
+            <SelectItem key={client.id} value={client.id.toString()}>
+              {client.clientName}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
 
-              <div>
-                <Label htmlFor="projectStatus">Status</Label>
-                <Select
-                  value={editingProject?.projectStatus}
-                  onValueChange={(value) =>
-                    setEditingProject({ ...editingProject, projectStatus: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ONGOING">ONGOING</SelectItem>
-                    <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <DialogFooter>
-                <Button type="submit" className="mt-3">Save Changes</Button>
-              </DialogFooter>
-            </form>
+    <div>
+      <Label htmlFor="editBillingType">Billing Type</Label>
+      <Select
+        value={editingProject?.billingType}
+        onValueChange={(value) =>
+          setEditingProject({ ...editingProject, billingType: value })
+        }
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select Billing Type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="BILLABLE">BILLABLE</SelectItem>
+          <SelectItem value="NON_BILLABLE">NON_BILLABLE</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+
+    <div>
+      <Label htmlFor="editStartDate">Start Date</Label>
+      <DatePicker
+        id="editStartDate"
+        selected={
+          editingProject?.startDate && !isNaN(Date.parse(editingProject.startDate))? new Date(editingProject.startDate) : null
+        }
+        onChange={(date) =>
+          setEditingProject({
+            ...editingProject,
+            startDate: date.toISOString().split("T")[0],
+          })
+        }
+        dateFormat="yyyy-MM-dd"
+        placeholderText="Select Start Date"
+        required
+      />
+    </div>
+
+    <div>
+      <Label htmlFor="editEndDate">End Date</Label>
+      <DatePicker
+        id="editEndDate"
+        selected={
+          editingProject?.endDate ? new Date(editingProject.endDate) : null
+        }
+        onChange={(date) =>
+          setEditingProject({
+            ...editingProject,
+            endDate: date.toISOString().split("T")[0],
+          })
+        }
+        dateFormat="yyyy-MM-dd"
+        placeholderText="Select End Date"
+        required
+      />
+    </div>
+  </div>
+
+  {/* Optionally keep Project Status here, if you still want it */}
+  <div className="mt-4">
+    <Label htmlFor="projectStatus">Status</Label>
+    <Select
+      value={editingProject?.projectStatus}
+      onValueChange={(value) =>
+        setEditingProject({ ...editingProject, projectStatus: value })
+      }
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Select status" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="ONGOING">ONGOING</SelectItem>
+        <SelectItem value="COMPLETED">COMPLETED</SelectItem>
+      </SelectContent>
+    </Select>
+  </div>
+
+  <DialogFooter className="mt-4">
+    <Button type="submit" disabled={isEditingProject}>
+      {{isEditingProject} ? "Save Changes":"Saving changes ..."  }  </Button>
+  </DialogFooter>
+</form>
           </DialogContent>
         </Dialog>
       )}
 
       {/* Add Dialog (Placeholder) */}
       {/* // 3. Update the Add Dialog form in your component as follows: */}
-      {isAddDialogOpen && (
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Project</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleAddSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Project Name</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={newProject.name}
-                    onChange={(e) =>
-                      setNewProject({ ...newProject, name: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="endDate">End Date</Label>
-                  <DatePicker
-                    id="endDate"
-                    selected={newProject.endDate ? new Date(newProject.endDate) : null}
-                    onChange={(date) =>
-                      setNewProject({ ...newProject, endDate: date.toISOString().split("T")[0] })
-                    }
-                    dateFormat="yyyy-MM-dd"
-                    placeholderText="Select End Date"
-                    className="input" // Adjust or remove based on your styling
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="clientId">Client Name</Label>
-                  <Select
-                    value={newProject.clientId}
-                    onValueChange={(value) =>
-                      setNewProject({ ...newProject, clientId: value })
-                    }
-                  >
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Select Client" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableClients.map((client) => (
-                        <SelectItem
-                          key={client.id}
-                          value={client.id.toString()}
-                        >
-                          {client.clientName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="billingType">Billing Type</Label>
-                  <Select
-                    value={newProject.billingType}
-                    onValueChange={(value) =>
-                      setNewProject({ ...newProject, billingType: value })
-                    }
-                  >
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Select Billing Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="BILLABLE">BILLABLE</SelectItem>
-                      <SelectItem value="NON_BILLABLE">NON_BILLABLE</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit">Add Project</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      )}
+      
 
+
+
+
+
+      {/* Add Dialog */}
+{isAddDialogOpen && (
+  <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Add Project</DialogTitle>
+      </DialogHeader>
+      <form onSubmit={handleAddSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-5">
+          <div>
+            <Label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              Project Name
+            </Label>
+            <Input
+              id="name"
+              name="name"
+              placeholder="Enter project name"
+              value={newProject.name}
+              onChange={(e) =>
+                setNewProject({ ...newProject, name: e.target.value })
+              }
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="clientId" className="block text-sm font-medium text-gray-700">
+              Client Name
+            </Label>
+            <Select
+              value={newProject.clientId}
+              onValueChange={(value) =>
+                setNewProject({ ...newProject, clientId: value })
+              }
+            >
+              <SelectTrigger className="mt-1 w-full">
+                <SelectValue placeholder="Select Client" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableClients.map((client) => (
+                  <SelectItem key={client.id} value={client.id.toString()}>
+                    {client.clientName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="billingType" className="block text-sm font-medium text-gray-700">
+              Billing Type
+            </Label>
+            <Select
+              value={newProject.billingType}
+              onValueChange={(value) =>
+                setNewProject({ ...newProject, billingType: value })
+              }
+            >
+              <SelectTrigger className="mt-1 w-full">
+                <SelectValue placeholder="Select Billing Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="BILLABLE">BILLABLE</SelectItem>
+                <SelectItem value="NON_BILLABLE">NON_BILLABLE</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+              Start Date
+            </Label>
+            <DatePicker
+              id="startDate"
+              selected={newProject.startDate ? new Date(newProject.startDate) : new Date()}
+              onChange={(date) =>
+                setNewProject({ ...newProject, startDate: date.toISOString().split("T")[0] })
+              }
+              dateFormat="yyyy-MM-dd"
+              placeholderText="Select Start Date"
+              className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+              End Date
+            </Label>
+            <DatePicker
+              id="endDate"
+              selected={newProject.endDate ? new Date(newProject.endDate) : null}
+              onChange={(date) =>
+                setNewProject({ ...newProject, endDate: date.toISOString().split("T")[0] })
+              }
+              dateFormat="yyyy-MM-dd"
+              placeholderText="Select End Date"
+              className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            />
+          </div>
+        </div>
+        <DialogFooter className="mt-4">
+          <Button type="submit" className="w-full sm:w-auto" disabled={isAddingProject} >
+            {isAddingProject ? "Adding Project..." : "Add Project"}
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
+  </Dialog>
+)}
 
       {deleteProjectId && (
         <AlertDialog

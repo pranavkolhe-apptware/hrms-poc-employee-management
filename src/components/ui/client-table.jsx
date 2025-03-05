@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "./alert-dialog";
 import { useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 export default function ClientTable() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -91,7 +92,7 @@ const handleEditSubmit = async (e) => {
     };
 
     // Send PUT request with full payload
-    await axios.put(`${import.meta.env.VITE_BACKEND_API_URL}client/update", updatedClient`);
+    await axios.put(`${import.meta.env.VITE_BACKEND_API_URL}client/update`, updatedClient);
 
     // Refresh the client list after successful update
     const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}client/listClients`);
@@ -111,7 +112,8 @@ const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
       setIsAddingClient(true);
-      await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}client/add", newClient`);
+      console.log("newClient", newClient);
+      await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}client/add`, newClient);
       
       // Refresh the client list after successful addition
       const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}client/listClients`);
@@ -129,7 +131,11 @@ const handleEditSubmit = async (e) => {
       });
     } catch (error) {
       console.error("Add client error:", error);
-      toast.error(`Failed to add client: ${error.message}`);
+      if (error.response && error.response.status === 409) {
+        toast.error("Client already exists");
+      } else {
+        toast.error(`Failed to add client: ${error.message}`);
+      }
     }finally {
       setIsAddingClient(false);
     }
@@ -192,6 +198,7 @@ const handleEditSubmit = async (e) => {
             <TableHead>Client Name</TableHead>
             <TableHead>Client Contact</TableHead>
             <TableHead>Contact Number</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Location</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -206,6 +213,7 @@ const handleEditSubmit = async (e) => {
               <TableCell>{client.clientName || "N/A"}</TableCell>
               <TableCell>{client.clientContact || "N/A"}</TableCell>
               <TableCell>{client.contactNo || "N/A"}</TableCell>
+              <TableCell>{client.clientEmail || "N/A"}</TableCell>
               <TableCell>{client.location || "N/A"}</TableCell>
               <TableCell className="flex items-center gap-2">
                 <Button onClick={() => handleEdit(client)}>
@@ -278,6 +286,7 @@ const handleEditSubmit = async (e) => {
                   <Input
                     id="clientName"
                     name="clientName"
+                    placeholder="Enter client name"
                     value={newClient.clientName}
                     onChange={(e) =>
                       setNewClient({ ...newClient, clientName: e.target.value })
@@ -290,6 +299,7 @@ const handleEditSubmit = async (e) => {
                   <Input
                     id="clientContact"
                     name="clientContact"
+                    placeholder="Enter client contact"
                     value={newClient.clientContact}
                     onChange={(e) =>
                       setNewClient({ ...newClient, clientContact: e.target.value })
@@ -302,6 +312,7 @@ const handleEditSubmit = async (e) => {
                   <Input
                     id="authorizedSignatory"
                     name="authorizedSignatory"
+                    placeholder="Enter authorized signatory"
                     value={newClient.authorizedSignatory}
                     onChange={(e) =>
                       setNewClient({ ...newClient, authorizedSignatory: e.target.value })
@@ -314,6 +325,7 @@ const handleEditSubmit = async (e) => {
                   <Input
                     id="clientEmail"
                     name="clientEmail"
+                    placeholder="Enter client email"
                     value={newClient.clientEmail}
                     onChange={(e) =>
                       setNewClient({ ...newClient, clientEmail: e.target.value })
@@ -326,6 +338,7 @@ const handleEditSubmit = async (e) => {
                   <Input
                     id="contactNo"
                     name="contactNo"
+                    placeholder="Enter contact number"
                     value={newClient.contactNo}
                     onChange={(e) =>
                       setNewClient({ ...newClient, contactNo: e.target.value })
@@ -338,6 +351,7 @@ const handleEditSubmit = async (e) => {
                   <Input
                     id="location"
                     name="location"
+                    placeholder="Enter location"
                     value={newClient.location}
                     onChange={(e) =>
                       setNewClient({ ...newClient, location: e.target.value })
@@ -382,6 +396,8 @@ const handleEditSubmit = async (e) => {
           </AlertDialogContent>
         </AlertDialog>
       )}
+
+<Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 }

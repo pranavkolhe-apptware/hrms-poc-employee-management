@@ -29,6 +29,8 @@ const EmployeeList = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 7
 
+
+
   useEffect(() => {
     fetchEmployees()
   }, [])
@@ -36,9 +38,10 @@ const EmployeeList = () => {
   const fetchEmployees = async () => {
     try {
       setLoading(true)
-      const response = await fetch("https://hrms-development.onrender.com/employee/listEmployees")
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}employee/listEmployees`)
 
       if (!response.ok) {
+        toast.error(`HTTP error! Status: ${response.status}`)
         throw new Error(`HTTP error! Status: ${response.status}`)
       }
 
@@ -66,6 +69,7 @@ const EmployeeList = () => {
       setError(null)
     } catch (err) {
       console.error("Error fetching employees:", err)
+      toast.error("Failed to load employees. Please try again later.")
       setError("Failed to load employees. Please try again later.")
       setEmployees([])
     } finally {
@@ -94,27 +98,20 @@ const EmployeeList = () => {
 
     try {
       setDeleteLoading(true)
-      const response = await fetch(`https://hrms-development.onrender.com/employee/delete?id=${employeeToDelete.id}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}employee/delete?id=${employeeToDelete.id}`, {
         method: "DELETE",
       })
 
       if (response.ok) {
         setEmployees(employees.filter((emp) => emp.id !== employeeToDelete.id))
-        toast({
-          title: "Success",
-          description: `Employee ${employeeToDelete.name} has been deleted successfully.`,
-          variant: "default",
-        })
+        toast.success(`Employee ${employeeToDelete.name} has been deleted successfully`);
       } else {
+        toast.error(`Failed to delete employee. Status: ${response.status}`);
         throw new Error(`Failed to delete employee. Status: ${response.status}`)
       }
     } catch (err) {
       console.error("Error deleting employee:", err)
-      toast({
-        title: "Error",
-        description: `Failed to delete employee. Please try again.`,
-        variant: "destructive",
-      })
+      toast.error("Failed to delete employee. Please try again later.")
     } finally {
       setDeleteLoading(false)
       setDeleteDialogOpen(false)

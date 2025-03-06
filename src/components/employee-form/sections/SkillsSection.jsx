@@ -194,3 +194,4 @@ const SkillsSection = ({ formData, setFormData, errors, setErrors }) => {
 };
 
 export default SkillsSection;
+    

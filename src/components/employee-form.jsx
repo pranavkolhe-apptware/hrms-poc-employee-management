@@ -85,6 +85,10 @@ const EmployeeForm = ({ employee, onClose, onSubmit, isEditing = false }) => {
     if (formData.primarySkills.length === 0) newErrors.primarySkills = "At least one primary skill is required";
 
     setErrors(newErrors);
+    if(Object.keys(newErrors).length > 0) {
+      toast.error("Please fill all required fields correctly");
+    }
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -118,8 +122,8 @@ const EmployeeForm = ({ employee, onClose, onSubmit, isEditing = false }) => {
 
 
       const url = isEditing
-        ? `https://hrms-development.onrender.com/employee/update?id=${formData.id}`
-        : "https://hrms-development.onrender.com/employee/add";
+        ? `${import.meta.env.VITE_BACKEND_API_URL}employee/update?id=${formData.id}`
+        : `${import.meta.env.VITE_BACKEND_API_URL}employee/add`;
 
         console.log("API Data", apiData);
       const response = await fetch(url, {
@@ -132,6 +136,7 @@ const EmployeeForm = ({ employee, onClose, onSubmit, isEditing = false }) => {
 
       if (!response.ok) {
         const errorData = await response.text();
+        toast.error(errorData || `Failed to ${isEditing ? "update" : "add"} employee`);
         throw new Error(errorData || `Failed to ${isEditing ? "update" : "add"} employee`);
       }
 

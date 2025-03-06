@@ -5,7 +5,7 @@ import { RecentSales } from "../components/RecentSales"
 import { EmployeeTable } from "../components/EmployeeTable"
 import { ProjectTable } from "../components/ProjectTable"
 import { ClientTable } from "../components/ClientTable"
-import { AllotmentTable } from "../components/AllotmentTable"
+// import { AllotmentTable } from "../components/AllotmentTable"
 
 const Home = () => {
   return (

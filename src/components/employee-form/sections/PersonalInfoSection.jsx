@@ -48,7 +48,7 @@ const PersonalInfoSection = ({ formData, setFormData, errors, setErrors, isEditi
           )}
         </div>
 
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label htmlFor="contactNumber" className="text-sm">
             Contact Number
           </Label>
@@ -68,7 +68,36 @@ const PersonalInfoSection = ({ formData, setFormData, errors, setErrors, isEditi
               <p>{errors.contactNumber}</p>
             </div>
           )}
+        </div> */}
+
+        <div className="space-y-2">
+          <Label htmlFor="contactNumber" className="text-sm">
+            Contact Number
+          </Label>
+          <Input
+            id="contactNumber"
+            name="contactNumber"
+            value={formData.contactNumber}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, ""); // Allow only numbers
+              if (value.length <= 10) {
+                handleChange({ target: { name: "contactNumber", value } });
+              }
+            }}
+            maxLength={10}
+            className={cn(
+              "transition-colors focus:border-primary",
+              errors.contactNumber ? "border-destructive" : "border-input hover:border-neutral-400"
+            )}
+          />
+          {errors.contactNumber && (
+            <div className="flex items-center text-xs text-destructive mt-1">
+              <AlertCircle className="h-3 w-3 mr-1" />
+              <p>{errors.contactNumber}</p>
+            </div>
+          )}
         </div>
+
 
         <div className="space-y-2">
           <Label htmlFor="personalEmail" className="text-sm">

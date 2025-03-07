@@ -47,12 +47,14 @@ export default function ProjectTable() {
   const [availableClients, setAvailableClients] = useState([]);
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [isEditingProject, setIsEditingProject] = useState(false);
+  const [progressFilter, setProgressFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
 
   // New project state for the add form (if needed)
   const [newProject, setNewProject] = useState({
     name: "",
+    startDate: new Date().toISOString().split("T")[0],
     endDate: "",
-    startDate: "",
     clientId: "",
     billingType: ""
   });
@@ -79,14 +81,47 @@ export default function ProjectTable() {
 
 
   // Filter projects (by project name or client name)
+  // const filteredProjects = projects.filter((project) => {
+  //   const projectName = project.projectName || "";
+  //   const clientName = (project.client && project.client.clientName) || "";
+  //   return (
+  //     projectName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     clientName.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  // });
+
+
   const filteredProjects = projects.filter((project) => {
-    const projectName = project.projectName || "";
-    const clientName = (project.client && project.client.clientName) || "";
-    return (
-      projectName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      clientName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const projectName = project.projectName?.toLowerCase() || "";
+    const clientName = project.client?.clientName?.toLowerCase() || "";
+    const matchesSearch =
+      projectName.includes(searchQuery.toLowerCase()) ||
+      clientName.includes(searchQuery.toLowerCase());
+  
+    const matchesProgress =
+      progressFilter === "" || 
+      progressFilter === "all" ||  // Add this line to handle "all" value
+      project.projectStatus?.toUpperCase() === progressFilter.toUpperCase();
+  
+    const matchesType =
+      typeFilter === "" || 
+      typeFilter === "all" ||  // Add this line to handle "all" value
+      project.projectType?.toUpperCase() === typeFilter.toUpperCase();
+  
+    return matchesSearch && matchesProgress && matchesType;
   });
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Handler stubs (edit, add, delete, team modal)
   function handleEdit(project) {
@@ -144,7 +179,7 @@ export default function ProjectTable() {
      setIsAddingProject(true); 
       await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}project/add`, newProject);
       toast.success("New project added successfully!");
-      console.log("New project:", newProject);
+      console.log("New projectjjj:", newProject);
       setIsAddDialogOpen(false);
       // Optionally refresh the projects list:
       const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}project/listProjects`);
@@ -154,7 +189,8 @@ export default function ProjectTable() {
         name: "",
         clientId: "",
         billingType: "",
-        endDate: ""
+        endDate: "",
+        startDate: new Date().toISOString().split("T")[0],
       });
     } catch (error) {
       console.error("Error adding project:", error);
@@ -204,15 +240,37 @@ export default function ProjectTable() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full md:max-w-xs"
         />
-        <Select value={clientFilter} onValueChange={setClientFilter}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Filter by client" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            {/* Optional: Map valid client names */}
-          </SelectContent>
-        </Select>
+
+
+        {/* {/* Filter by Progress} */}
+  <Select value={progressFilter} onValueChange={setProgressFilter}>
+    <SelectTrigger className="w-40">
+      <SelectValue placeholder="Filter by Progress" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="all">All</SelectItem>
+      <SelectItem value="ONGOING">Ongoing</SelectItem>
+      <SelectItem value="COMPLETED">Completed</SelectItem>
+    </SelectContent>
+  </Select> 
+
+
+
+
+
+  {/* Filter by Project Type */}
+  <Select value={typeFilter} onValueChange={setTypeFilter}>
+    <SelectTrigger className="w-40">
+      <SelectValue placeholder="Filter by Project Type" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="all">All</SelectItem>
+      <SelectItem value="BILLABLE">Billable</SelectItem>
+      <SelectItem value="NON_BILLABLE">Non-Billable</SelectItem>
+    </SelectContent>
+  </Select>
+
+
         <Button onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Project
@@ -226,10 +284,11 @@ export default function ProjectTable() {
           <TableRow>
             <TableHead>Project Name</TableHead>
             <TableHead>Client Name</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>Progress</TableHead>
             <TableHead>Project Type</TableHead>
             <TableHead>View Team</TableHead>
             <TableHead>Start Date</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -293,7 +352,9 @@ export default function ProjectTable() {
         required
       />
     </div>
-    <div>
+
+
+    {/* <div>
       <Label htmlFor="editClientId">Client Name</Label>
       <Select
         value={editingProject?.clientId}
@@ -312,7 +373,10 @@ export default function ProjectTable() {
           ))}
         </SelectContent>
       </Select>
-    </div>
+    </div> */}
+
+
+
 
     <div>
       <Label htmlFor="editBillingType">Billing Type</Label>
@@ -373,7 +437,7 @@ export default function ProjectTable() {
 
   {/* Optionally keep Project Status here, if you still want it */}
   <div className="mt-4">
-    <Label htmlFor="projectStatus">Status</Label>
+    <Label htmlFor="projectStatus">Progress</Label>
     <Select
       value={editingProject?.projectStatus}
       onValueChange={(value) =>
@@ -481,7 +545,7 @@ export default function ProjectTable() {
             </Label>
             <DatePicker
               id="startDate"
-              selected={newProject.startDate ? new Date(newProject.startDate) : new Date()}
+              selected={newProject.startDate ? new Date(newProject.startDate) : null}
               onChange={(date) =>
                 setNewProject({ ...newProject, startDate: date.toISOString().split("T")[0] })
               }

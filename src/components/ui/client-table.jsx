@@ -339,11 +339,17 @@ const handleEditSubmit = async (e) => {
                     id="contactNo"
                     name="contactNo"
                     placeholder="Enter contact number"
+                    
                     value={newClient.contactNo}
-                    onChange={(e) =>
-                      setNewClient({ ...newClient, contactNo: e.target.value })
-                    }
-                    required
+                    onChange={(e) => {
+                      // Keep only digits
+                      let input = e.target.value.replace(/\D/g, "");
+                      // Trim to a maximum of 10 digits
+                      if (input.length > 10) {
+                        input = input.slice(0, 10);
+                      }
+                      setNewClient({ ...newClient, contactNo: input });
+                    }}
                   />
                 </div>
                 <div>

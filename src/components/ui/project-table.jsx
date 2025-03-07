@@ -24,6 +24,13 @@ import {
   AlertDialogTitle,
 } from "./alert-dialog";
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { User, Users } from "lucide-react";
+
+
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { set } from "date-fns";
@@ -35,6 +42,7 @@ export default function ProjectTable() {
   // Fetch projects from API (instead of using static dummy data)
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoadingTeam, setIsLoadingTeam] = useState(false);
 
   // Dialog states for edit, add, deletion, and team modal
   const [editingProject, setEditingProject] = useState(null);
@@ -49,6 +57,7 @@ export default function ProjectTable() {
   const [isEditingProject, setIsEditingProject] = useState(false);
   const [progressFilter, setProgressFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
+  const [teamMembers, setTeamMembers] = useState([]);
 
   // New project state for the add form (if needed)
   const [newProject, setNewProject] = useState({
@@ -58,6 +67,7 @@ export default function ProjectTable() {
     clientId: "",
     billingType: ""
   });
+
 
   // Fetch projects from the API on mount
   useEffect(() => {
@@ -223,9 +233,22 @@ export default function ProjectTable() {
     }
   };
 
-  const openTeamModal = (project) => {
+  const openTeamModal = async (project) => {
     setModalProject(project);
     setIsTeamModalOpen(true);
+    setIsLoadingTeam(true);
+  
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_API_URL}employee/byProject?projectId=${project.id}`
+    );
+    setTeamMembers(response.data);
+  } catch (error) {
+    console.error("Error fetching team data:", error);
+    toast.error("Failed to load team members");
+  } finally {
+    setIsLoadingTeam(false);
+  }
   };
 
   if (loading) return <p>Loading projects...</p>;
@@ -604,22 +627,82 @@ export default function ProjectTable() {
 
       {/* Project Team Modal (unchanged from before) */}
       {isTeamModalOpen && modalProject && (
-        <Dialog open={isTeamModalOpen} onOpenChange={setIsTeamModalOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{modalProject.projectName} - Project Team</DialogTitle>
-            </DialogHeader>
-            <div className="p-4 space-y-4">
-              <p>Static team view content goes here.</p>
-            </div>
-            <DialogFooter>
-              <Button variant="link" onClick={() => (window.location.href = `/projects/${modalProject.id}`)}>
-                View More Details
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+  <Dialog open={isTeamModalOpen} onOpenChange={setIsTeamModalOpen}>
+    <DialogContent className="max-w-3xl">
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <Users className="h-5 w-5" />
+          {modalProject.projectName} - Project Team
+        </DialogTitle>
+      </DialogHeader>
+      
+      {isLoadingTeam ? (
+        <div className="flex justify-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        </div>
+      ) : teamMembers.length === 0 ? (
+        <div className="text-center p-8">
+          <p className="text-muted-foreground">No team members assigned to this project yet.</p>
+        </div>
+      ) : (
+        <div className="space-y-4 my-2">
+          {teamMembers.map((member) => (
+            <Card key={member.allotmentId} className="border rounded-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Avatar className="h-8 w-8 bg-primary">
+                    <AvatarFallback>{member.employeeName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="font-medium">{member.employeeName}</div>
+                    <Badge variant={member.employeeStatus === "DEPLOYED" ? "default" : "outline"} className="text-xs mt-2 mb-2">
+                      {member.employeeStatus}
+                    </Badge>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              
+              {member.listOfShadows && member.listOfShadows.length > 0 && (
+                <CardContent className="pt-0">
+                  <Accordion type="single" collapsible className="w-full no-underline">
+                    <AccordionItem value="shadows" className="">
+                      <AccordionTrigger className="text-sm py-2 hover:no-underline">
+                        Shadow Team ({member.listOfShadows.length})
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2 pl-6 border-l-2 border-muted">
+                          {member.listOfShadows.map((shadow) => (
+                            <div key={shadow.allotmentId} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+                              <Avatar className="h-7 w-7 bg-muted-foreground/70">
+                                <AvatarFallback>{shadow.employeeName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="text-sm font-medium">{shadow.employeeName}</div>
+                                <div className="text-xs text-muted-foreground">Allocation: {shadow.employeeAllocationPercent}%</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+              )}
+            </Card>
+          ))}
+        </div>
       )}
+      
+      <DialogFooter>
+        {/* <Button variant="link" onClick={() => (window.location.href = `/projects/${modalProject.id}`)}>
+          View Full Project Details
+        </Button> */}
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+)}
+
+
     </div>
   );
 }
